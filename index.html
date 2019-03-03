@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+	</head>
+	<body>
+		<script src="js/lodash.js"></script>
+		<script type="text/javascript">
+			console.log(_.uniq([1,2,3,4,5,2,3,4,5,23,'a','A'], function(val) {
+				return typeof val === "string" ? val.toLocaleLowerCase() : val;
+			}));
+			
+			
+			//$().xxxx    _().xxxx
+			//数组数据.reduce()   Array.prototype.reduce
+			//函数编程的思想   流式思想     vue等状态管理使用的流式思想
+			//面向对象编程思想
+			console.log(_([1,2,3,4,5,2,3,4,5,'a','A']).uniq(function(val) {
+				return typeof val === "string" ? val.toLocaleLowerCase() : val;
+			}));				//目标源 + 回调               面向对象方式 第一次调用this指向 window   
+
+			//开启链接式调用
+			console.log(_.chain([1,2,3,4,5,2,3,4,5,'a','A']).uniq().reduce());
+		</script>
+	</body>
+</html>
