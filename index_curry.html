@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>柯里化</title>  
+</head>
+<body>
+    <script>
+        //$.ajax(url,type,data)
+        //$.ajaxGet(url,data)
+        //$.ajax
+
+        //第一个特点  参数复用  add(1)(2)(3)  ==> 6   提高性能
+        function add(a,b,c) {
+            console.log(a+b+c);
+        }
+
+        add(1,2,3);
+
+        function add0(a) {
+            //大量计算
+            return function(b) {
+                //大量计算
+                return function(c) {
+                    console.log(a+b+c);
+                }
+            }
+        }
+        var add1 = add0(1);
+        var add2 = add1(2);
+
+        add0(1)(2)(3);
+        add2(3);
+        add2(4);
+        add2(5);
+
+
+        //第二个特点   提前返回 提高性能 第一次调用需要判断浏览器类型，第二次就已经知道，不需要再判断了
+        var addEvent = function() {
+            if(window.addEventListener) {   //对浏览器进行判断  不同浏览器不同绑定方法
+                return function(el, type, fn, capture) {
+                    el.addEventListener(type, function(e) {
+                        fn.callnack(el,e);
+                    }, capture);
+                }          
+            } else {
+                return function(el, type, fn, capture) {
+                    el.attachEvent();
+                }
+            }
+        }
+
+        var elBind = addEvent();   //判断浏览器得到一个函数
+        console.log(elBind);
+        elBind(p, click, callnack, true);
+        elBind(div, click, callnack, true);
+        elBind(span, click, callnack, true);
+
+        //第三个特点  延迟执行  不定参数
+        var allScore = 0;
+        var addScore = function(score) {
+            // 对分数的判断  得到多少个3分
+            allScore += score;
+        }
+
+        addScore(3);
+        addScore(2);
+        addScore(1);
+        addScore(1);
+        addScore(1);
+        addScore(1);
+        addScore(1);
+        console.log(allScore);
+
+        var curryScore = function(fn) {
+            var _allScore = [];
+            return function() {
+
+                if(arguments.length === 0) {
+                    return fn.apply(null, _allScore);   // apply 形实转换  对象冒充 执行函数
+                    // return fn(_allScore);   // apply 形实转换  对象冒充 执行函数
+                } else {
+                    _allScore = _allScore.concat([].slice.call(arguments));
+                }
+                // console.log(_allScore);
+            }
+        }
+
+        var allScore = 0;
+        var curryAddScore = curryScore(function() {
+            // 写统计的代码
+            for (let index = 0; index < arguments.length; index++) {
+                allScore += arguments[index];
+                
+            }
+        
+        });
+
+        // 空间换时间
+        curryAddScore(3);
+        console.log(allScore);
+        curryAddScore(2);
+        console.log(allScore);
+        curryAddScore(2);
+        curryAddScore(1);
+        curryAddScore(1);
+        curryAddScore(1);
+        curryAddScore();
+        console.log(allScore);
+
+
+        // 通用的一个版本
+        var curry = function(fn) {
+            var _args = [];
+            return function cd() {
+                if(arguments.length === 0) {
+                    return fn.apply(null, _args);
+                }else {
+                    //
+                    Array.prototype.push.apply(_args, [].slice.call(arguments));
+                }
+                return cd;
+            }
+        }
+
+        function add(a,b,c) {
+            console.log(a+b+c);
+        }
+
+        var addCurry = curry(add);
+
+        addCurry(1)(2)(3)();
+        </script>
+</body>
+</html>
